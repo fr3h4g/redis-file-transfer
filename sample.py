@@ -1,1 +1,1 @@
-from file_transfer import main
+from redis_file_transfer import main

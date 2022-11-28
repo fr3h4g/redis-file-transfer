@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "file-transfer"
+name = "redis-file-transfer"
 version = "0.0.1"
 authors = [{ name = "Fredrik Haglund", email = "fr3h4g@gmail.com" }]
 description = "A command line tool for transfer files via Redis"

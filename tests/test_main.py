@@ -1,7 +1,7 @@
 import pytest
-from file_transfer import main
+from redis_file_transfer import main
 
 
-def test_file_transfer():
+def test_redis_file_transfer():
     with pytest.raises(SystemExit):
         main()

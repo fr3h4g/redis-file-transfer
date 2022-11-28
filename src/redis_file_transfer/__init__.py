@@ -1,0 +1,1 @@
+from file_transfer.__main__ import file_transfer

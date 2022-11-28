@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "file-transfer"
+version = "0.0.1"
+authors = [{ name = "Fredrik Haglund", email = "fr3h4g@gmail.com" }]
+description = "A command line tool for transfer files via Redis"
+license = { text = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+keywords = []
+dependencies = []
+
+[project.urls]
+"Homepage" = "https://github.com/fr3h4g/file-transfer-python"
+
+[project.optional-dependencies]
+dev = ["black", "flake8", "pytest", "invoke", "pytest-cov", "isort"]
+
+[tool.isort]
+profile = "black"

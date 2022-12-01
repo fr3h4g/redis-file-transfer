@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "redis-file-transfer"
-version = "0.0.1"
+version = "0.0.2"
 authors = [{ name = "Fredrik Haglund", email = "fr3h4g@gmail.com" }]
 description = "A command line tool for transfer files via Redis"
 license = { text = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 4 - Beta",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",

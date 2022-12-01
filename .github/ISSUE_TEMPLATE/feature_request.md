@@ -13,7 +13,7 @@ A clear and concise description of what the feature or problem is.
 
 ### Proposed solution
 
-How will it benefit CLI and its users?
+How will it benefit redis-file-transfer and its users?
 
 ### Additional context
 

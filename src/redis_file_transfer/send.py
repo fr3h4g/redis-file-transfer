@@ -24,7 +24,7 @@ class Sender:
         if self._file_exists():
             file_data = self._load_file()
             if file_data:
-                self.send_file_data(file_data)
+                self._send_file_data(file_data)
 
     def _load_file(self):
         filedata = None
@@ -58,7 +58,7 @@ class Sender:
         if lowest_id:
             self._redis.execute_command("XTRIM", self.channel, "MINID", lowest_id)
 
-    def send_file_data(
+    def _send_file_data(
         self,
         file_data: dict,
     ):

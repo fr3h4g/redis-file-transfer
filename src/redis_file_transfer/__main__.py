@@ -4,6 +4,7 @@ from typing import Optional, Sequence
 
 import redis
 
+from redis_file_transfer.fetch import Fetcher
 from redis_file_transfer.receive import Receiver
 from redis_file_transfer.send import Sender
 
@@ -69,12 +70,35 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         help="regex for file exclusion, default: %(default)r",
     )
 
+    fetch_parser = subparsers.add_parser("fetch", help="fetch files from sftp")
+    _add_redis_options(fetch_parser)
+    fetch_parser.add_argument("url")
+    _add_channel_options(fetch_parser)
+    fetch_parser.add_argument(
+        "--delete",
+        "-d",
+        action="store_true",
+        help="delete source file when fetched",
+    )
+    fetch_parser.add_argument(
+        "--include",
+        default="",
+        help="regex for file inclusion, default: %(default)r",
+    )
+    fetch_parser.add_argument(
+        "--exclude",
+        default="$^",
+        help="regex for file exclusion, default: %(default)r",
+    )
+
     args = parser.parse_args(argv)
 
     try:
         if args.command == "send":
             try:
                 sender = Sender(redis_url=args.redis_url, filename=args.filename)
+                if args.channel:
+                    sender.channel = args.channel
                 sender.send()
             except FileNotFoundError:
                 print(f"Error: file {args.filename} not found", file=sys.stderr)
@@ -83,6 +107,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             try:
                 receiver = Receiver(redis_url=args.redis_url, directory=args.directory)
                 receiver.overwrite = args.overwrite
+                receiver.channel = args.channel
                 if args.group:
                     receiver.group_name = args.group
                 receiver.include = args.include
@@ -91,6 +116,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             except FileNotFoundError:
                 print(f"Error: directory {args.directory} not found", file=sys.stderr)
                 return 2
+        elif args.command == "fetch":
+            fetcher = Fetcher(redis_url=args.redis_url, fetch_url=args.url)
+            fetcher.channel = args.channel
+            fetcher.delete = args.delete
+            fetcher.include = args.include
+            fetcher.exclude = args.exclude
+            fetcher.fetch()
     except redis.exceptions.ConnectionError:
         print(f"Error: can't connect to redis, url: {args.redis_url}", file=sys.stderr)
         return 2

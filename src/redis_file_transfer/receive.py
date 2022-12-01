@@ -1,9 +1,11 @@
 import base64
 import os
+import re
 
 import redis
 
 from redis_file_transfer.client_id import generate_id
+from redis_file_transfer.filter import filename_filter
 
 
 class Receiver:
@@ -12,7 +14,7 @@ class Receiver:
     overwrite: bool = False
     directory: str = ""
     last_message_id: str = ""
-    exclude: str = ""
+    exclude: str = "$^"
     include: str = ""
 
     def __init__(self, redis_url: str, directory: str):
@@ -59,13 +61,20 @@ class Receiver:
         return True
 
     def _save_received_file(self, message_id: str, data: dict):
-        print(f"Received file: {data['filename']}, id: {message_id}")
-        filename = os.path.join(self.directory, data["filename"])
-        if not self.overwrite and os.path.exists(filename):
-            filename = self._get_new_filename(filename)
-        with open(filename, "wb") as file:
-            file_data = base64.decodebytes(str(data["data"]).encode("utf8"))
-            file.write(file_data)
+        if filename_filter(
+            data["filename"], re.compile(self.include), re.compile(self.exclude)
+        ):
+            print(f"Received file: {data['filename']}, id: {message_id}")
+            filename = os.path.join(self.directory, data["filename"])
+            if not self.overwrite and os.path.exists(filename):
+                filename = self._get_new_filename(filename)
+            with open(filename, "wb") as file:
+                file_data = base64.decodebytes(str(data["data"]).encode("utf8"))
+                file.write(file_data)
+        else:
+            print(
+                f"Skipped file: {data['filename']}, id: {message_id}, matched exclude filter: {self.exclude}"
+            )
 
     def _save_last_message_id(self, message_id: str) -> None:
         key = self._key

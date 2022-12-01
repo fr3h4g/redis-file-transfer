@@ -33,3 +33,6 @@ dev = ["black", "flake8", "pytest", "invoke", "pytest-cov", "isort"]
 
 [tool.isort]
 profile = "black"
+
+[project.scripts]
+redis-file-transfer = "redis_file_transfer.__main__:main"

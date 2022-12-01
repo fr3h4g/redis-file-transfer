@@ -26,7 +26,7 @@ keywords = []
 dependencies = ['redis', 'paramiko']
 
 [project.urls]
-"Homepage" = "https://github.com/fr3h4g/redis-file-transfer-python"
+"Homepage" = "https://github.com/fr3h4g/redis-file-transfer"
 
 [project.optional-dependencies]
 dev = ["black", "flake8", "pytest", "invoke", "pytest-cov", "isort"]

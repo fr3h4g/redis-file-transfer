@@ -23,7 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
 ]
 keywords = []
-dependencies = []
+dependencies = ['redis']
 
 [project.urls]
 "Homepage" = "https://github.com/fr3h4g/redis-file-transfer-python"

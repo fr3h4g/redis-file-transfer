@@ -1,38 +1,26 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: "\U0001F41B Bug report"
+about: Report a bug or unexpected behavior while using GitHub CLI
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+### Describe the bug
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+A clear and concise description of what the bug is. Include version by typing `gh --version`.
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+### Steps to reproduce the behavior
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+1. Type this '...'
+2. View the output '....'
+3. See error
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+### Expected vs actual behavior
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+A clear and concise description of what you expected to happen and what actually happened.
 
-**Additional context**
-Add any other context about the problem here.
+### Logs
+
+Paste the activity from your command line. Redact if needed.

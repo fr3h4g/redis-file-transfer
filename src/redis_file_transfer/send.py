@@ -8,6 +8,8 @@ import redis
 class Sender:
     channel: str = "default"
     filename: str = ""
+    delete: bool = False
+    move: str = ""
 
     def __init__(self, redis_url: str, filename: str):
         self._redis = redis.from_url(redis_url, encoding="utf8", decode_responses=True)
@@ -66,6 +68,13 @@ class Sender:
             self.channel,
             file_data,
         )
+        if result:
+            if self.delete:
+                os.unlink(self.filename)
+            elif self.move:
+                if not os.path.exists(self.move):
+                    raise FileNotFoundError(f"Directory '{self.move}' does not exists")
+                os.rename(self.filename, os.path.join(self.move, self.filename))
         print(f"File sent, filename: {self.filename}, id: {result}")
         self._clean_old_done_files()
         self._redis.close()

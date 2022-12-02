@@ -43,6 +43,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         action="store_true",
         help="delete file after successfully transfered",
     )
+    send_parser.add_argument(
+        "--move",
+        "-m",
+        metavar="PATH",
+        help="move file after successfully transfered",
+    )
 
     receive_parser = subparsers.add_parser("receive", help="receive files")
     receive_parser.add_argument("directory", help="directory to store received files")
@@ -81,6 +87,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         help="delete source file when fetched",
     )
     fetch_parser.add_argument(
+        "--move",
+        "-m",
+        metavar="PATH",
+        help="move source file when fetched",
+    )
+    fetch_parser.add_argument(
         "--include",
         default="",
         help="regex for file inclusion, default: %(default)r",
@@ -99,6 +111,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 sender = Sender(redis_url=args.redis_url, filename=args.filename)
                 if args.channel:
                     sender.channel = args.channel
+                sender.delete = args.delete
+                sender.move = args.move
                 sender.send()
             except FileNotFoundError:
                 print(f"Error: file {args.filename} not found", file=sys.stderr)
@@ -120,6 +134,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             fetcher = Fetcher(redis_url=args.redis_url, fetch_url=args.url)
             fetcher.channel = args.channel
             fetcher.delete = args.delete
+            fetcher.move = args.move
             fetcher.include = args.include
             fetcher.exclude = args.exclude
             fetcher.fetch()

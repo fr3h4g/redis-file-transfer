@@ -1,8 +1,8 @@
 import io
-import os
 import re
-from urllib.parse import urlparse
+from pathlib import PurePosixPath
 from stat import S_ISREG
+from urllib.parse import urlparse
 
 import paramiko
 
@@ -40,7 +40,7 @@ class Fetcher:
                 if filename_filter(
                     file.filename, re.compile(self.include), re.compile(self.exclude)
                 ) and S_ISREG(file.st_mode):
-                    filepath = os.path.join(self._path, file.filename)
+                    filepath = str(PurePosixPath(self._path, file.filename))
                     with io.BytesIO() as fo:
                         sftpClient.getfo(filepath, fo)
                         print(f"File fetched, filename: {file.filename}")
@@ -54,15 +54,17 @@ class Fetcher:
                     if self.delete:
                         sftpClient.remove(filepath)
                     elif self.move:
+                        move_to_dir = str(PurePosixPath(self._path, self.move))
                         try:
-                            sftpClient.chdir(self.move)
+                            sftpClient.chdir(move_to_dir)
                         except FileNotFoundError:
                             raise FileNotFoundError(
-                                f"directory {self.move} does not exists"
+                                f"directory {move_to_dir} does not exists"
                             )
                         else:
                             sftpClient.rename(
-                                filepath, os.path.join(self.move, file.filename)
+                                filepath,
+                                str(PurePosixPath(move_to_dir, file.filename)),
                             )
             sftpClient.close()
         tp.close()

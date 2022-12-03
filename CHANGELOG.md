@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.0.4] - 2022-12-02
+- Add CHANGELOG.md + github action for auto generation. PR [#12](https://github.com/fr3h4g/redis-file-transfer/pull/12) by [@fr3h4g](https://github.com/fr3h4g).## [0.0.4] - 2022-12-02
 
 - fix os.path.join bug on windows with sftp-path
 

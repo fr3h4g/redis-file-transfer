@@ -1,8 +1,12 @@
 import base64
 import datetime
 import os
+import logging
 
 import redis
+
+
+logger = logging.getLogger("redis-file-transfer")
 
 
 class Sender:
@@ -75,6 +79,6 @@ class Sender:
                 if not os.path.exists(self.move):
                     raise FileNotFoundError(f"Directory '{self.move}' does not exists")
                 os.rename(self.filename, os.path.join(self.move, self.filename))
-        print(f"File sent, filename: {self.filename}, id: {result}")
+        logger.info(f"File sent, filename: {self.filename}, id: {result}")
         self._clean_old_done_files()
         self._redis.close()

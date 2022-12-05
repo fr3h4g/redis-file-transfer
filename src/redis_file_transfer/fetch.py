@@ -3,11 +3,14 @@ import re
 from pathlib import PurePosixPath
 from stat import S_ISREG
 from urllib.parse import urlparse
-
+import logging
 import paramiko
 
 from redis_file_transfer.filter import filename_filter
 from redis_file_transfer.send import Sender
+
+
+logger = logging.getLogger("redis-file-transfer")
 
 
 class Fetcher:
@@ -30,6 +33,7 @@ class Fetcher:
             self._port = 22
 
     def fetch(self):
+        logger.info(f"Fetching files from {self._hostname}, {self._port}.")
         tp = paramiko.Transport((self._hostname, self._port))
         tp.connect(
             username=self._username, password=self._password
@@ -43,7 +47,7 @@ class Fetcher:
                     filepath = str(PurePosixPath(self._path, file.filename))
                     with io.BytesIO() as fo:
                         sftpClient.getfo(filepath, fo)
-                        print(f"File fetched, filename: {file.filename}")
+                        logger.info(f"File fetched, filename: {file.filename}")
                         fo.seek(0)
                         data = fo.read()
                     send = Sender(self._redis_url, file.filename)

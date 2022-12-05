@@ -1,6 +1,6 @@
 # Changelog
 
-- Add CHANGELOG.md + github action for auto generation. PR [#12](https://github.com/fr3h4g/redis-file-transfer/pull/12) by [@fr3h4g](https://github.com/fr3h4g).
+- add logging. PR [#13](https://github.com/fr3h4g/redis-file-transfer/pull/13) by [@fr3h4g](https://github.com/fr3h4g).- Add CHANGELOG.md + github action for auto generation. PR [#12](https://github.com/fr3h4g/redis-file-transfer/pull/12) by [@fr3h4g](https://github.com/fr3h4g).
  
 ## [0.0.4] - 2022-12-02
 

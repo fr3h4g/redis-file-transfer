@@ -1,12 +1,32 @@
 import argparse
 import sys
 from typing import Optional, Sequence
-
+import logging
+from logging.handlers import TimedRotatingFileHandler
 import redis
 
 from redis_file_transfer.fetch import Fetcher
 from redis_file_transfer.receive import Receiver
 from redis_file_transfer.send import Sender
+
+
+logger = logging.getLogger("redis-file-transfer")
+logger.setLevel(logging.INFO)
+
+ch = logging.StreamHandler()
+ch_formatter = logging.Formatter("%(levelname)s - %(message)s")
+ch.setFormatter(ch_formatter)
+ch.setLevel(logging.INFO)
+
+fh = TimedRotatingFileHandler(
+    "redis-file-transfer.log", "midnight", interval=1, backupCount=7
+)
+fh_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+fh.setFormatter(fh_formatter)
+fh.setLevel(logging.INFO)
+
+logger.addHandler(fh)
+logger.addHandler(ch)
 
 
 def _add_redis_options(parser: argparse.ArgumentParser) -> None:
@@ -26,12 +46,25 @@ def _add_channel_options(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_verbose_options(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="verbose logging output",
+    )
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
+
+    # global logger
 
     parser = argparse.ArgumentParser()
 
     subparsers = parser.add_subparsers(dest="command", title="commands")
     subparsers.required = True
+
+    # --- sender ---
 
     send_parser = subparsers.add_parser("send", help="send files")
     send_parser.add_argument("filename")
@@ -49,6 +82,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         metavar="PATH",
         help="move file after successfully transfered",
     )
+    _add_verbose_options(send_parser)
+
+    # --- receiver ---
 
     receive_parser = subparsers.add_parser("receive", help="receive files")
     receive_parser.add_argument("directory", help="directory to store received files")
@@ -75,6 +111,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         default="$^",
         help="regex for file exclusion, default: %(default)r",
     )
+    _add_verbose_options(receive_parser)
+
+    # --- fetcher ---
 
     fetch_parser = subparsers.add_parser("fetch", help="fetch files from sftp")
     _add_redis_options(fetch_parser)
@@ -102,8 +141,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         default="$^",
         help="regex for file exclusion, default: %(default)r",
     )
+    _add_verbose_options(fetch_parser)
 
     args = parser.parse_args(argv)
+
+    if args.verbose:
+        for handle in logger.handlers:
+            handle.level = 10
+        logger.level = 10
+
+    logger.debug(sys.argv)
+    logger.debug(args)
 
     try:
         if args.command == "send":
@@ -115,7 +163,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 sender.move = args.move
                 sender.send()
             except FileNotFoundError:
-                print(f"Error: file {args.filename} not found", file=sys.stderr)
+                logger.error(f"Error: file {args.filename} not found")
                 return 2
         elif args.command == "receive":
             try:
@@ -128,7 +176,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 receiver.exclude = args.exclude
                 receiver.run()
             except FileNotFoundError:
-                print(f"Error: directory {args.directory} not found", file=sys.stderr)
+                logger.error(f"Error: directory {args.directory} not found")
                 return 2
         elif args.command == "fetch":
             fetcher = Fetcher(redis_url=args.redis_url, fetch_url=args.url)
@@ -139,7 +187,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             fetcher.exclude = args.exclude
             fetcher.fetch()
     except redis.exceptions.ConnectionError:
-        print(f"Error: can't connect to redis, url: {args.redis_url}", file=sys.stderr)
+        logger.error(f"Error: can't connect to redis, url: {args.redis_url}")
         return 2
 
     return 0

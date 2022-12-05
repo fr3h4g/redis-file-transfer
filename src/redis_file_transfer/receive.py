@@ -1,11 +1,14 @@
 import base64
 import os
 import re
-
+import logging
 import redis
 
 from redis_file_transfer.client_id import generate_id
 from redis_file_transfer.filter import filename_filter
+
+
+logger = logging.getLogger("redis-file-transfer")
 
 
 class Receiver:
@@ -52,7 +55,7 @@ class Receiver:
         self.last_message_id = self._get_last_message_id()
         events = self._redis.xread({self.channel: self.last_message_id})
         if not events:
-            print("No new files receive.")
+            logger.info("No new files to receive.")
             return False
         for _stream, rows in events:
             for message_id, row in rows:
@@ -64,7 +67,7 @@ class Receiver:
         if filename_filter(
             data["filename"], re.compile(self.include), re.compile(self.exclude)
         ):
-            print(f"Received file: {data['filename']}, id: {message_id}")
+            logger.info(f"Received file: {data['filename']}, id: {message_id}")
             filename = os.path.join(self.directory, data["filename"])
             if not self.overwrite and os.path.exists(filename):
                 filename = self._get_new_filename(filename)
@@ -72,7 +75,7 @@ class Receiver:
                 file_data = base64.decodebytes(str(data["data"]).encode("utf8"))
                 file.write(file_data)
         else:
-            print(
+            logger.info(
                 f"Skipped file: {data['filename']}, id: {message_id}, matched exclude filter: {self.exclude}"
             )
 

@@ -9,7 +9,6 @@ def test_get_new_filename(monkeypatch):
     def exists_mock(_filename):
         global exists_mock_count
         exists_mock_count += 1
-        print(exists_mock_count)
         if exists_mock_count < 2:
             return True
         return False

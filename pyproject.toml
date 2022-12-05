@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "redis-file-transfer"
-version = "0.0.4"
+version = "0.0.5"
 authors = [{ name = "Fredrik Haglund", email = "fr3h4g@gmail.com" }]
 description = "A command line tool for transfer files via Redis"
 license = { text = "LICENSE" }
